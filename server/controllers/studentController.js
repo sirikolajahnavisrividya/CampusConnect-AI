@@ -26,6 +26,41 @@ const getStudentProfile = async (req, res) => {
   }
 };
 
+// Update Student Profile
+const updateStudentProfile = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const updatedStudent = await Student.findOneAndUpdate(
+      { email },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("-password");
+
+    if (!updatedStudent) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile Updated Successfully",
+      student: updatedStudent,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getStudentProfile,
+  updateStudentProfile,
 };
